@@ -1,0 +1,24 @@
+{
+  "name": "sm2-spaced-repetition",
+  "version": "1.0.0",
+  "description": "A flashcard application using the SM2 spaced repetition algorithm",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed"
+  },
+  "keywords": [
+    "spaced-repetition",
+    "sm2",
+    "flashcards",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
