@@ -59,9 +59,6 @@ const LoginPage: React.FC = () => {
       // Create a fake token
       const fakeToken = 'test_token_' + Date.now();
 
-      // Store the token in localStorage
-      localStorage.setItem('token', fakeToken);
-
       // Set user data directly
       const fakeUser = {
         id: '123',
@@ -69,14 +66,11 @@ const LoginPage: React.FC = () => {
         email: 'test@example.com'
       };
 
-      // Update auth context
-      localStorage.setItem('user', JSON.stringify(fakeUser));
+      // Use the login function from AuthContext with the fake user data
+      await login(fakeToken, fakeUser);
 
       // Navigate to flashcards page
       navigate('/flashcards');
-
-      // Reload the page to ensure the auth state is updated
-      window.location.reload();
     } catch (err) {
       console.error('Direct login error:', err);
     }

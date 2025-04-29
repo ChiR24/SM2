@@ -50,13 +50,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Login function
-  const login = async (token: string) => {
+  const login = async (token: string, userData?: User) => {
     localStorage.setItem('token', token);
-    
+
     try {
-      const response = await authAPI.getProfile();
-      setUser(response.data);
-      setIsAuthenticated(true);
+      if (userData) {
+        // If user data is provided, use it directly (for testing)
+        setUser(userData);
+        setIsAuthenticated(true);
+      } else {
+        // Otherwise, fetch user data from API
+        const response = await authAPI.getProfile();
+        setUser(response.data);
+        setIsAuthenticated(true);
+      }
     } catch (error) {
       // If token is invalid, clear it
       localStorage.removeItem('token');
