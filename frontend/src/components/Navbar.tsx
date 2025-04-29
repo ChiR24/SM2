@@ -26,13 +26,15 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, username, onLogout }) 
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <Link to="/">SM2 Flashcards</Link>
+        <Link to={isAuthenticated ? "/flashcards" : "/"}>SM2 Flashcards</Link>
       </div>
 
       <ul className="navbar-links">
-        <li>
-          <Link to="/">Home</Link>
-        </li>
+        {!isAuthenticated && (
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+        )}
 
         {isAuthenticated ? (
           <>

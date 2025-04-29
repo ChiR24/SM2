@@ -24,10 +24,7 @@ const LoginPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      console.log('Attempting to login with:', { email });
-
       const response = await authAPI.login({ email, password });
-      console.log('Login response:', response.data);
 
       // Use the login function from AuthContext to update auth state
       await login(response.data.token);
@@ -35,17 +32,12 @@ const LoginPage: React.FC = () => {
       // Redirect to flashcards page
       navigate('/flashcards');
     } catch (err: any) {
-      console.error('Login error:', err);
-
-      // For debugging purposes, show more detailed error information
+      // Handle login errors
       if (err.response) {
-        console.error('Error response:', err.response.data);
         setError(`Login failed: ${err.response.data.message || err.response.statusText}`);
       } else if (err.request) {
-        console.error('Error request:', err.request);
         setError('Network error. Please check your connection.');
       } else {
-        console.error('Error message:', err.message);
         setError(`Error: ${err.message}`);
       }
 
@@ -53,28 +45,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // For testing purposes - direct login without API
-  const handleDirectLogin = async () => {
-    try {
-      // Create a fake token
-      const fakeToken = 'test_token_' + Date.now();
 
-      // Set user data directly
-      const fakeUser: User = {
-        id: '123',
-        username: 'testuser',
-        email: 'test@example.com'
-      };
-
-      // Use the login function from AuthContext with the fake user data
-      await login(fakeToken, fakeUser);
-
-      // Navigate to flashcards page
-      navigate('/flashcards');
-    } catch (err) {
-      console.error('Direct login error:', err);
-    }
-  };
 
   return (
     <div className="auth-container">
@@ -118,17 +89,6 @@ const LoginPage: React.FC = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        {/* Direct login button for testing */}
-        <div style={{ marginTop: '1rem' }}>
-          <button
-            className="btn-secondary"
-            onClick={handleDirectLogin}
-            style={{ width: '100%' }}
-          >
-            Test Login (Bypass API)
-          </button>
-        </div>
 
         <div className="auth-links">
           <p>

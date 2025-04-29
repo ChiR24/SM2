@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Flashcard, FlashcardUI, RecallGrade } from '../types';
+import { Flashcard, RecallGrade } from '../types';
 import './FlashcardReview3D.css';
 
 interface FlashcardReview3DProps {
-  flashcard: FlashcardUI | Flashcard;
+  flashcard: Flashcard;
   onGrade: (grade: RecallGrade) => void;
 }
 
@@ -84,6 +84,7 @@ const FlashcardReview3D: React.FC<FlashcardReview3DProps> = ({ flashcard, onGrad
           {/* Back of card */}
           <div className="flashcard-review-back">
             <div className="review-content">
+              <div className="answer-label">Answer:</div>
               <h3>{flashcard.back}</h3>
             </div>
             <div className="review-pattern"></div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Flashcard, FlashcardUI } from '../types';
+import { Flashcard } from '../types';
 
 interface FlashcardItem3DProps {
-  flashcard: FlashcardUI | Flashcard;
+  flashcard: Flashcard;
   onDelete?: (id: string) => void;
 }
 
@@ -10,28 +10,26 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
   const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Check if the card has been reviewed before
+  // Handle both repetition and repetitions field names for compatibility
+  const hasBeenReviewed = (flashcard.repetition ?? 0) > 0 || (flashcard.repetitions ?? 0) > 0;
+
+  // Check if the card is due for review
+  const isDueForReview = new Date(flashcard.nextReviewDate) <= new Date();
+
   const handleFlip = () => {
+    // Allow flipping for all cards
     setIsFlipped(!isFlipped);
   };
 
-  // Helper function to determine if flashcard is FlashcardUI or Flashcard
-  const isFlashcardUI = (card: FlashcardUI | Flashcard): card is FlashcardUI => {
-    return 'id' in card && 'easeFactor' in card && 'nextReview' in card;
-  };
-
-  // Get the appropriate properties based on flashcard type
-  const getId = () => isFlashcardUI(flashcard) ? flashcard.id : flashcard._id;
+  // Get the appropriate properties
+  const getId = () => flashcard._id;
   const getEaseFactor = () => {
-    const factor = isFlashcardUI(flashcard) ? flashcard.easeFactor : flashcard.efactor;
     // Ensure we return a valid number
-    return typeof factor === 'number' && !isNaN(factor) ? factor : 2.5; // Default to 2.5 if invalid
+    return typeof flashcard.efactor === 'number' && !isNaN(flashcard.efactor) ? flashcard.efactor : 2.5; // Default to 2.5 if invalid
   };
   const getNextReview = () => {
-    if (isFlashcardUI(flashcard)) {
-      return flashcard.nextReview;
-    } else {
-      return new Date(flashcard.nextReviewDate);
-    }
+    return new Date(flashcard.nextReviewDate);
   };
 
   // Calculate learning strength as a percentage (0-100)
@@ -53,7 +51,10 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
     return Math.round((easeFactorNormalized * 0.7 + repetitionsNormalized * 0.3) * 100);
   };
 
-  const strength = calculateStrength(getEaseFactor(), flashcard.repetitions || 0);
+  // Use either repetition or repetitions field, whichever is available
+  const repetitionValue = (typeof flashcard.repetition === 'number') ? flashcard.repetition :
+                         (typeof flashcard.repetitions === 'number' ? flashcard.repetitions : 0);
+  const strength = calculateStrength(getEaseFactor(), repetitionValue);
 
   // Get color based on strength
   const getStrengthColor = (strength: number) => {
@@ -100,7 +101,9 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
 
   return (
     <div
-      className={`flashcard-item-3d ${isFlipped ? 'is-flipped' : ''}`}
+      className={`flashcard-item-3d ${isFlipped ? 'is-flipped' : ''}
+                 ${!hasBeenReviewed ? 'not-reviewed' : ''}
+                 ${isDueForReview ? 'due-for-review' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -142,13 +145,7 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
               <div className="card-front-content">
                 <h3>{flashcard.front}</h3>
               </div>
-              <div className="card-hint">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 15l-6-6"></path>
-                  <path d="M9 15l6-6"></path>
-                </svg>
-                <span>Click to flip</span>
-              </div>
+
             </div>
             <div className="flashcard-pattern"></div>
           </div>
@@ -181,15 +178,10 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
             </div>
             <div className="card-content">
               <div className="card-back-content">
+                <div className="answer-label">Answer:</div>
                 <p>{flashcard.back}</p>
               </div>
-              <div className="card-hint">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 15l-6-6"></path>
-                  <path d="M9 15l6-6"></path>
-                </svg>
-                <span>Click to flip back</span>
-              </div>
+
             </div>
             <div className="flashcard-pattern"></div>
           </div>
@@ -198,15 +190,15 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
 
       <div className="card-footer">
         <div className="card-meta">
-          <div className="meta-item">
+          <div className="meta-item" title="Based on the SM2 spaced repetition algorithm. First review: 1 day, Second: 6 days, Then: increasing intervals">
             <span className="meta-label">Next Review</span>
             <span className="meta-value">{formatNextReview(getNextReview())}</span>
           </div>
-          <div className="meta-item">
+          <div className="meta-item" title="Number of times you've successfully recalled this card">
             <span className="meta-label">Repetitions</span>
-            <span className="meta-value">{flashcard.repetitions}</span>
+            <span className="meta-value">{repetitionValue}</span>
           </div>
-          <div className="meta-item">
+          <div className="meta-item" title="Ease factor: how easy it is to remember this card. Higher values mean longer intervals between reviews.">
             <span className="meta-label">Ease</span>
             <span className="meta-value">{getEaseFactor().toFixed(2)}</span>
           </div>

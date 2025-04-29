@@ -11,7 +11,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   loading: boolean;
-  login: (token: string, userData?: User) => Promise<void>;
+  login: (token: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -50,20 +50,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Login function
-  const login = async (token: string, userData?: User) => {
+  const login = async (token: string) => {
     localStorage.setItem('token', token);
 
     try {
-      if (userData) {
-        // If user data is provided, use it directly (for testing)
-        setUser(userData);
-        setIsAuthenticated(true);
-      } else {
-        // Otherwise, fetch user data from API
-        const response = await authAPI.getProfile();
-        setUser(response.data);
-        setIsAuthenticated(true);
-      }
+      // Fetch user data from API
+      const response = await authAPI.getProfile();
+      setUser(response.data);
+      setIsAuthenticated(true);
     } catch (error) {
       // If token is invalid, clear it
       localStorage.removeItem('token');

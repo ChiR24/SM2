@@ -12,6 +12,8 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
   dueCards,
   streak
 }) => {
+  // Calculate learning progress percentage
+  const learningProgress = totalCards > 0 ? Math.round(((totalCards - dueCards) / totalCards) * 100) : 0;
 
   return (
     <div className="dashboard-stats">
@@ -49,6 +51,29 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
               <h3 className="stat-title">Total Cards</h3>
               <div className="stat-value">{totalCards}</div>
               <div className="stat-subtitle">in your collection</div>
+            </div>
+          </div>
+          <div className="stat-pattern"></div>
+        </div>
+
+        {/* Learning Progress Card */}
+        <div className="stat-card learning-progress">
+          <div className="stat-card-inner">
+            <div className="stat-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <div className="stat-content">
+              <h3 className="stat-title">Learning Progress</h3>
+              <div className="stat-value">{learningProgress}%</div>
+              <div className="progress-bar">
+                <div
+                  className="progress"
+                  style={{ width: `${learningProgress}%` }}
+                ></div>
+              </div>
+              <div className="stat-subtitle">{totalCards - dueCards} of {totalCards} cards mastered</div>
             </div>
           </div>
           <div className="stat-pattern"></div>

@@ -19,7 +19,9 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-transition: -webkit-transform 0.6s;
+  transition: transform 0.6s;
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   cursor: pointer;
   border-radius: var(--radius-xl);
@@ -29,8 +31,11 @@
 .flashcard-review-front,
 .flashcard-review-back {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -38,19 +43,38 @@
   border: 1px solid var(--color-border-light);
 }
 
+.flashcard-review-front {
+  z-index: 2;
+  -webkit-transform: rotateY(0deg);
+  transform: rotateY(0deg);
+}
+
 .flashcard-review-back {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+  background-color: #f8fafc; /* Slightly different background for the back */
+  border: 2px solid var(--color-primary);
+}
+
+/* Fix for inverted text on the back of the card */
+.flashcard-review-back > * {
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 
-/* Fix for inverted text on back of card */
+/* Ensure the back content is properly displayed */
 .is-flipped .flashcard-review-back {
-  transform: rotateY(0deg);
-  z-index: 1; /* Ensure back content is visible when flipped */
+  z-index: 2;
 }
 
-/* Hide front content when flipped */
 .is-flipped .flashcard-review-front {
-  z-index: 0;
+  z-index: 1;
+}
+
+/* Animation for flipping */
+.is-flipped .flashcard-review-inner {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }
 
 .review-content {
@@ -70,6 +94,15 @@
   line-height: var(--line-height-tight);
   max-width: 100%;
   word-wrap: break-word;
+}
+
+.answer-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .review-hint {
@@ -224,9 +257,6 @@
 }
 
 /* Animations */
-.is-flipped .flashcard-review-inner {
-  transform: rotateY(180deg);
-}
 
 .animate-slide-in {
   animation: slideIn 0.5s var(--transition-ease) forwards;

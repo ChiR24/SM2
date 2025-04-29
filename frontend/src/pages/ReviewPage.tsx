@@ -40,6 +40,13 @@ const ReviewPage: React.FC = () => {
         setCurrentIndex(currentIndex + 1);
       } else {
         setReviewCompleted(true);
+
+        // Dispatch a custom event to notify other components that reviews have been completed
+        // This will allow the FlashcardsPage to update its due count when the user returns
+        const reviewCompletedEvent = new CustomEvent('reviewsCompleted', {
+          detail: { count: dueFlashcards.length }
+        });
+        window.dispatchEvent(reviewCompletedEvent);
       }
     } catch (err) {
       setError('Failed to submit review grade');

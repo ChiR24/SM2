@@ -18,31 +18,57 @@ const FlashcardsPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchFlashcards = async () => {
-      try {
-        setLoading(true);
-        const [flashcardsResponse, dueFlashcardsResponse] = await Promise.all([
-          flashcardAPI.getFlashcards(),
-          flashcardAPI.getDueFlashcards()
-        ]);
+  // Function to fetch flashcards and due count
+  const fetchFlashcards = async () => {
+    try {
+      setLoading(true);
+      const [flashcardsResponse, dueFlashcardsResponse] = await Promise.all([
+        flashcardAPI.getFlashcards(),
+        flashcardAPI.getDueFlashcards()
+      ]);
 
-        setFlashcards(flashcardsResponse.data);
-        setDueCount(dueFlashcardsResponse.data.length);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch flashcards');
-        setLoading(false);
-      }
+      setFlashcards(flashcardsResponse.data);
+      setDueCount(dueFlashcardsResponse.data.length);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch flashcards');
+      setLoading(false);
+    }
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchFlashcards();
+  }, []);
+
+  // Listen for review completion events
+  useEffect(() => {
+    // Handler for the custom event
+    const handleReviewsCompleted = () => {
+      // Refresh due cards count when reviews are completed
+      fetchFlashcards();
     };
 
-    fetchFlashcards();
+    // Add event listener
+    window.addEventListener('reviewsCompleted', handleReviewsCompleted);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('reviewsCompleted', handleReviewsCompleted);
+    };
   }, []);
 
   const handleCreateFlashcard = async (flashcardData: { front: string; back: string }) => {
     try {
       const response = await flashcardAPI.createFlashcard(flashcardData);
+
+      // Add the new flashcard to the state
       setFlashcards([response.data, ...flashcards]);
+
+      // Refresh due cards count to update the UI
+      const dueFlashcardsResponse = await flashcardAPI.getDueFlashcards();
+      setDueCount(dueFlashcardsResponse.data.length);
+
       setShowForm(false);
     } catch (err) {
       setError('Failed to create flashcard');
@@ -50,31 +76,22 @@ const FlashcardsPage: React.FC = () => {
   };
 
   const handleDeleteFlashcard = async (id: string) => {
-    console.log('Delete button clicked for ID:', id);
     if (window.confirm('Are you sure you want to delete this flashcard?')) {
       try {
-        console.log('Confirmed deletion for ID:', id);
-        const response = await flashcardAPI.deleteFlashcard(id);
-        console.log('Delete response:', response);
+        await flashcardAPI.deleteFlashcard(id);
 
-        // Refresh the flashcards list after deletion
-        console.log('Refreshing flashcards list...');
-        const flashcardsResponse = await flashcardAPI.getFlashcards();
-        console.log('Got new flashcards:', flashcardsResponse.data.length);
+        // Refresh both flashcards list and due cards count after deletion
+        const [flashcardsResponse, dueFlashcardsResponse] = await Promise.all([
+          flashcardAPI.getFlashcards(),
+          flashcardAPI.getDueFlashcards()
+        ]);
+
+        // Update state with fresh data
         setFlashcards(flashcardsResponse.data);
-        console.log('State updated with new flashcards');
-
-        // Force a re-render
-        setTimeout(() => {
-          console.log('Checking flashcards count after timeout:',
-            document.querySelectorAll('.flashcard-list-item').length);
-        }, 500);
+        setDueCount(dueFlashcardsResponse.data.length);
       } catch (err) {
-        console.error('Error deleting flashcard:', err);
         setError('Failed to delete flashcard');
       }
-    } else {
-      console.log('Deletion cancelled by user');
     }
   };
 
@@ -126,24 +143,14 @@ const FlashcardsPage: React.FC = () => {
   // Calculate stats for dashboard
   const calculateStats = () => {
     const totalCards = flashcards.length;
-    const learningCards = flashcards.filter(card => card.repetitions > 0 && card.repetitions < 5).length;
-    const masteredCards = flashcards.filter(card => card.repetitions >= 5).length;
 
-    // Calculate retention rate (percentage of cards with grade >= 3)
-    const totalReviews = flashcards.reduce((sum, card) => sum + card.repetitions, 0);
-    const retentionRate = totalReviews > 0
-      ? Math.round((totalCards - dueCount) / totalCards * 100)
-      : 0;
-
-    // Mock streak for now - in a real app, this would be calculated from user's review history
-    const streak = 3;
+    // Calculate streak based on user's activity
+    // For now, we'll use a simple calculation - can be enhanced later
+    const streak = Math.min(totalCards > 0 ? 1 : 0, 5);
 
     return {
       totalCards,
       dueCards: dueCount,
-      learningCards,
-      masteredCards,
-      retentionRate,
       streak
     };
   };
@@ -196,9 +203,6 @@ const FlashcardsPage: React.FC = () => {
         <DashboardStats
           totalCards={stats.totalCards}
           dueCards={stats.dueCards}
-          learningCards={stats.learningCards}
-          masteredCards={stats.masteredCards}
-          retentionRate={stats.retentionRate}
           streak={stats.streak}
         />
       </motion.div>
@@ -247,12 +251,7 @@ const FlashcardsPage: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          {flashcards.map((flashcard, index) => {
-            // Convert the flashcard to the format expected by FlashcardItem3D
-            // We can pass the original flashcard directly since we've updated the component
-            // to handle both types
-
-            return (
+          {flashcards.map((flashcard, index) => (
               <motion.div
                 key={flashcard._id}
                 className="flashcard-grid-item"
@@ -265,8 +264,7 @@ const FlashcardsPage: React.FC = () => {
                   onDelete={handleDeleteFlashcard}
                 />
               </motion.div>
-            );
-          })}
+          ))}
         </motion.div>
       )}
     </motion.div>

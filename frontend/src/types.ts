@@ -1,6 +1,6 @@
 // User types
 export interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
 }
@@ -20,23 +20,17 @@ export interface Flashcard {
   front: string;
   back: string;
   nextReviewDate: string;
-  repetitions: number;
+  // Support both field names for compatibility
+  repetition?: number;
+  repetitions?: number;
   efactor: number;
   interval: number;
   createdAt: string;
   updatedAt: string;
+  lastReviewDate?: string | null;
 }
 
-// Enhanced Flashcard type for UI components
-export interface FlashcardUI {
-  id: string;
-  front: string;
-  back: string;
-  nextReview: Date;
-  repetitions: number;
-  easeFactor: number;
-  interval: number;
-}
+
 
 // Recall grade type (0-5)
 export type RecallGrade = 0 | 1 | 2 | 3 | 4 | 5;
@@ -51,8 +45,5 @@ export interface ApiResponse<T> {
 export interface DashboardStatsData {
   totalCards: number;
   dueCards: number;
-  learningCards: number;
-  masteredCards: number;
-  retentionRate: number;
   streak: number;
 }
