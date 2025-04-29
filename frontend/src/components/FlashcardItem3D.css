@@ -50,6 +50,12 @@
 /* Fix for inverted text on back of card */
 .is-flipped .flashcard-back {
   transform: rotateY(0deg);
+  z-index: 1; /* Ensure back content is visible when flipped */
+}
+
+/* Hide front content when flipped */
+.is-flipped .flashcard-front {
+  z-index: 0;
 }
 
 .card-header {

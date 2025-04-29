@@ -100,16 +100,16 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
 
   return (
     <div
-      className="flashcard-item-3d"
+      className={`flashcard-item-3d ${isFlipped ? 'is-flipped' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`flashcard-wrapper ${isFlipped ? 'is-flipped' : ''}`}>
+      <div className="flashcard-wrapper">
         <div
           className="flashcard-inner"
           onClick={handleFlip}
           style={{
-            transform: isHovered && !isFlipped ? 'rotateY(10deg)' : isFlipped ? 'rotateY(180deg)' : 'rotateY(0)',
+            transform: isHovered && !isFlipped ? 'rotateY(10deg)' : 'rotateY(0)',
           }}
         >
           {/* Front of card */}
