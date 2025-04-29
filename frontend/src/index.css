@@ -95,21 +95,7 @@
   --z-index-tooltip: 1070;
 }
 
-/* Dark Mode Variables */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #0F172A;
-    --color-background-alt: #1E293B;
-    --color-background-card: #1E293B;
-
-    --color-text: #F8FAFC;
-    --color-text-secondary: #CBD5E1;
-    --color-text-tertiary: #94A3B8;
-
-    --color-border: #334155;
-    --color-border-light: #1E293B;
-  }
-}
+/* White theme is now universal */
 
 /* Base Styles */
 * {

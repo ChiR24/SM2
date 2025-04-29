@@ -47,6 +47,11 @@
   transform: rotateY(180deg);
 }
 
+/* Fix for inverted text on back of card */
+.is-flipped .flashcard-back {
+  transform: rotateY(0deg);
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -182,7 +187,7 @@
   .card-content {
     padding: var(--space-4);
   }
-  
+
   .card-front-content h3 {
     font-size: var(--font-size-lg);
   }

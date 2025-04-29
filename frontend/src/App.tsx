@@ -28,9 +28,14 @@ function AppContent() {
       <Navbar isAuthenticated={isAuthenticated} username={user?.username} onLogout={logout} />
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {/* Home page - redirect to flashcards if logged in */}
+          <Route path="/" element={isAuthenticated ? <Navigate to="/flashcards" /> : <HomePage />} />
+
+          {/* Auth routes - redirect to flashcards if logged in */}
           <Route path="/login" element={isAuthenticated ? <Navigate to="/flashcards" /> : <LoginPage />} />
           <Route path="/register" element={isAuthenticated ? <Navigate to="/flashcards" /> : <RegisterPage />} />
+
+          {/* Protected routes */}
           <Route
             path="/flashcards"
             element={
@@ -47,7 +52,9 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" />} />
+
+          {/* Fallback route - redirect to home or flashcards based on auth state */}
+          <Route path="*" element={isAuthenticated ? <Navigate to="/flashcards" /> : <Navigate to="/" />} />
         </Routes>
       </main>
     </div>

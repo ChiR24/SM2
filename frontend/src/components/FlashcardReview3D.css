@@ -42,6 +42,11 @@
   transform: rotateY(180deg);
 }
 
+/* Fix for inverted text on back of card */
+.is-flipped .flashcard-review-back {
+  transform: rotateY(0deg);
+}
+
 .review-content {
   display: flex;
   flex-direction: column;
@@ -277,15 +282,15 @@
   .flashcard-review-3d {
     height: 300px;
   }
-  
+
   .review-content {
     padding: var(--space-4);
   }
-  
+
   .review-content h3 {
     font-size: var(--font-size-xl);
   }
-  
+
   .grade-options {
     grid-template-columns: repeat(2, 1fr);
   }

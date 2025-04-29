@@ -4,37 +4,14 @@ import './DashboardStats.css';
 interface DashboardStatsProps {
   totalCards: number;
   dueCards: number;
-  learningCards: number;
-  masteredCards: number;
-  retentionRate: number;
   streak: number;
 }
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({
   totalCards,
   dueCards,
-  learningCards,
-  masteredCards,
-  retentionRate,
   streak
 }) => {
-  // Calculate mastery percentage
-  const masteryPercentage = totalCards > 0 ? Math.round((masteredCards / totalCards) * 100) : 0;
-  
-  // Get trend indicators
-  const getTrendIcon = (isPositive: boolean) => {
-    return isPositive ? (
-      <svg className="trend-icon trend-up" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 17l5-5 5 5"></path>
-        <path d="M7 7h10v10"></path>
-      </svg>
-    ) : (
-      <svg className="trend-icon trend-down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 7l5 5 5-5"></path>
-        <path d="M7 17h10V7"></path>
-      </svg>
-    );
-  };
 
   return (
     <div className="dashboard-stats">
@@ -59,74 +36,19 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           <div className="stat-pattern"></div>
         </div>
 
-        {/* Learning Progress Card */}
-        <div className="stat-card learning-progress">
+        {/* Total Cards Card */}
+        <div className="stat-card total-cards">
           <div className="stat-card-inner">
             <div className="stat-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
             </div>
             <div className="stat-content">
-              <h3 className="stat-title">Learning Progress</h3>
-              <div className="stat-value-group">
-                <div className="stat-value">{learningCards}</div>
-                <div className="stat-trend">
-                  {getTrendIcon(true)}
-                  <span>Learning</span>
-                </div>
-              </div>
-              <div className="stat-value-group">
-                <div className="stat-value">{masteredCards}</div>
-                <div className="stat-trend">
-                  {getTrendIcon(true)}
-                  <span>Mastered</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="stat-pattern"></div>
-        </div>
-
-        {/* Mastery Rate Card */}
-        <div className="stat-card mastery-rate">
-          <div className="stat-card-inner">
-            <div className="stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20"></path>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-title">Mastery Rate</h3>
-              <div className="stat-value">{masteryPercentage}%</div>
-              <div className="progress-bar">
-                <div 
-                  className="progress" 
-                  style={{ width: `${masteryPercentage}%` }}
-                ></div>
-              </div>
-              <div className="stat-subtitle">{totalCards} total cards</div>
-            </div>
-          </div>
-          <div className="stat-pattern"></div>
-        </div>
-
-        {/* Retention Rate Card */}
-        <div className="stat-card retention-rate">
-          <div className="stat-card-inner">
-            <div className="stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 20v-6M6 20V10M18 20V4"></path>
-              </svg>
-            </div>
-            <div className="stat-content">
-              <h3 className="stat-title">Retention Rate</h3>
-              <div className="stat-value">{retentionRate}%</div>
-              <div className="stat-trend">
-                {getTrendIcon(retentionRate >= 75)}
-                <span>{retentionRate >= 75 ? 'Good' : 'Needs improvement'}</span>
-              </div>
+              <h3 className="stat-title">Total Cards</h3>
+              <div className="stat-value">{totalCards}</div>
+              <div className="stat-subtitle">in your collection</div>
             </div>
           </div>
           <div className="stat-pattern"></div>
