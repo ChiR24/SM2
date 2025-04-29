@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { flashcardAPI } from '../services/api';
 import { Flashcard } from '../types';
 import FlashcardForm from '../components/FlashcardForm';
+import FlashcardItem3D from '../components/FlashcardItem3D';
+import DashboardStats from '../components/DashboardStats';
 import { motion, AnimatePresence } from 'framer-motion';
+import '../components/FlashcardItem3D.css';
+import '../components/DashboardStats.css';
 
 const FlashcardsPage: React.FC = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -119,6 +123,33 @@ const FlashcardsPage: React.FC = () => {
     }
   };
 
+  // Calculate stats for dashboard
+  const calculateStats = () => {
+    const totalCards = flashcards.length;
+    const learningCards = flashcards.filter(card => card.repetitions > 0 && card.repetitions < 5).length;
+    const masteredCards = flashcards.filter(card => card.repetitions >= 5).length;
+
+    // Calculate retention rate (percentage of cards with grade >= 3)
+    const totalReviews = flashcards.reduce((sum, card) => sum + card.repetitions, 0);
+    const retentionRate = totalReviews > 0
+      ? Math.round((totalCards - dueCount) / totalCards * 100)
+      : 0;
+
+    // Mock streak for now - in a real app, this would be calculated from user's review history
+    const streak = 3;
+
+    return {
+      totalCards,
+      dueCards: dueCount,
+      learningCards,
+      masteredCards,
+      retentionRate,
+      streak
+    };
+  };
+
+  const stats = calculateStats();
+
   return (
     <motion.div
       className="flashcards-container"
@@ -134,16 +165,6 @@ const FlashcardsPage: React.FC = () => {
       >
         <div className="header-content">
           <h2>My Flashcards</h2>
-          <div className="stats-summary">
-            <div className="stat">
-              <span className="stat-number">{flashcards.length}</span>
-              <span className="stat-label">Total Cards</span>
-            </div>
-            <div className="stat">
-              <span className="stat-number">{dueCount}</span>
-              <span className="stat-label">Due Today</span>
-            </div>
-          </div>
         </div>
         <div className="flashcards-actions">
           <motion.button
@@ -164,6 +185,22 @@ const FlashcardsPage: React.FC = () => {
             Review Due Cards ({dueCount})
           </motion.button>
         </div>
+      </motion.div>
+
+      {/* Dashboard Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <DashboardStats
+          totalCards={stats.totalCards}
+          dueCards={stats.dueCards}
+          learningCards={stats.learningCards}
+          masteredCards={stats.masteredCards}
+          retentionRate={stats.retentionRate}
+          streak={stats.streak}
+        />
       </motion.div>
 
       <AnimatePresence>
@@ -211,59 +248,29 @@ const FlashcardsPage: React.FC = () => {
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           {flashcards.map((flashcard, index) => {
-            const statusInfo = getReviewStatus(flashcard.nextReviewDate);
-            const statusLabel = statusInfo.label;
+            // Convert the flashcard to the format expected by FlashcardItem3D
+            const flashcard3D = {
+              id: flashcard._id,
+              front: flashcard.front,
+              back: flashcard.back,
+              nextReview: new Date(flashcard.nextReviewDate),
+              repetitions: flashcard.repetitions,
+              easeFactor: flashcard.efactor,
+              interval: flashcard.interval
+            };
 
             return (
               <motion.div
                 key={flashcard._id}
                 className="flashcard-grid-item"
-                data-id={flashcard._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index, duration: 0.5 }}
-                whileHover={{ y: -5, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' }}
               >
-                <div className="card-header">
-                  <div className="card-status" style={{ backgroundColor: statusInfo.bgColor, color: statusInfo.color }}>
-                    {statusLabel}
-                  </div>
-                  <motion.button
-                    className="delete-btn"
-                    onClick={() => handleDeleteFlashcard(flashcard._id)}
-                    whileHover={{ scale: 1.1, backgroundColor: '#fee2e2', color: '#ef4444' }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
-                    </svg>
-                  </motion.button>
-                </div>
-                <div className="card-content">
-                  <div className="card-front">
-                    <h3>{flashcard.front}</h3>
-                  </div>
-                  <div className="card-divider"></div>
-                  <div className="card-back">
-                    <p>{flashcard.back}</p>
-                  </div>
-                </div>
-                <div className="card-footer">
-                  <div className="card-meta">
-                    <div className="meta-item">
-                      <span className="meta-label">Next:</span>
-                      <span className="meta-value">{formatDate(flashcard.nextReviewDate)}</span>
-                    </div>
-                    <div className="meta-item">
-                      <span className="meta-label">Interval:</span>
-                      <span className="meta-value">{flashcard.interval}d</span>
-                    </div>
-                    <div className="meta-item">
-                      <span className="meta-label">EF:</span>
-                      <span className="meta-value">{flashcard.efactor.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
+                <FlashcardItem3D
+                  flashcard={flashcard3D}
+                  onDelete={handleDeleteFlashcard}
+                />
               </motion.div>
             );
           })}

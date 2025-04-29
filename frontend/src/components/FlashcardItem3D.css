@@ -1,0 +1,189 @@
+/* 3D Flashcard Styles */
+.flashcard-item-3d {
+  background-color: var(--color-background-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-normal) var(--transition-ease);
+  height: 100%;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.flashcard-item-3d:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.flashcard-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-background-alt);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.card-status {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast) var(--transition-ease);
+}
+
+.delete-btn:hover {
+  color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.card-content {
+  padding: var(--space-6);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-front-content,
+.card-back-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-front-content h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+  line-height: var(--line-height-tight);
+  text-align: center;
+}
+
+.card-back-content p {
+  color: var(--color-text);
+  line-height: var(--line-height-relaxed);
+  text-align: center;
+}
+
+.card-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-8);
+  justify-content: center;
+}
+
+.flashcard-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  background-image: radial-gradient(var(--color-text-secondary) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card-footer {
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--color-background-alt);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.meta-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-weight-medium);
+}
+
+.meta-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+/* Animation for flipping */
+.is-flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+/* Hover effects */
+.flashcard-item-3d:hover .card-hint {
+  color: var(--color-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-content {
+    padding: var(--space-4);
+  }
+  
+  .card-front-content h3 {
+    font-size: var(--font-size-lg);
+  }
+}

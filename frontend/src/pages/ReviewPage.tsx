@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { flashcardAPI } from '../services/api';
 import { Flashcard, RecallGrade } from '../types';
-import FlashcardItem from '../components/FlashcardItem';
+import FlashcardReview3D from '../components/FlashcardReview3D';
 import { motion, AnimatePresence } from 'framer-motion';
+import '../components/FlashcardReview3D.css';
 
 const ReviewPage: React.FC = () => {
   const [dueFlashcards, setDueFlashcards] = useState<Flashcard[]>([]);
@@ -215,9 +216,18 @@ const ReviewPage: React.FC = () => {
           transition={{ duration: 0.4, ease: "easeOut" }}
           className="flashcard-review-wrapper"
         >
-          <FlashcardItem
-            flashcard={dueFlashcards[currentIndex]}
-            onGrade={handleGrade}
+          {/* Convert the flashcard to the format expected by FlashcardReview3D */}
+          <FlashcardReview3D
+            flashcard={{
+              id: dueFlashcards[currentIndex]._id,
+              front: dueFlashcards[currentIndex].front,
+              back: dueFlashcards[currentIndex].back,
+              nextReview: new Date(dueFlashcards[currentIndex].nextReviewDate),
+              repetitions: dueFlashcards[currentIndex].repetitions,
+              easeFactor: dueFlashcards[currentIndex].efactor,
+              interval: dueFlashcards[currentIndex].interval
+            }}
+            onGrade={(grade) => handleGrade(dueFlashcards[currentIndex]._id, grade)}
           />
         </motion.div>
       </AnimatePresence>
