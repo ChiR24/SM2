@@ -24,7 +24,10 @@ const LoginPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      console.log('Attempting to login with:', { email });
+
       const response = await authAPI.login({ email, password });
+      console.log('Login response:', response.data);
 
       // Use the login function from AuthContext to update auth state
       await login(response.data.token);
@@ -32,8 +35,50 @@ const LoginPage: React.FC = () => {
       // Redirect to flashcards page
       navigate('/flashcards');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login error:', err);
+
+      // For debugging purposes, show more detailed error information
+      if (err.response) {
+        console.error('Error response:', err.response.data);
+        setError(`Login failed: ${err.response.data.message || err.response.statusText}`);
+      } else if (err.request) {
+        console.error('Error request:', err.request);
+        setError('Network error. Please check your connection.');
+      } else {
+        console.error('Error message:', err.message);
+        setError(`Error: ${err.message}`);
+      }
+
       setLoading(false);
+    }
+  };
+
+  // For testing purposes - direct login without API
+  const handleDirectLogin = async () => {
+    try {
+      // Create a fake token
+      const fakeToken = 'test_token_' + Date.now();
+
+      // Store the token in localStorage
+      localStorage.setItem('token', fakeToken);
+
+      // Set user data directly
+      const fakeUser = {
+        id: '123',
+        username: 'testuser',
+        email: 'test@example.com'
+      };
+
+      // Update auth context
+      localStorage.setItem('user', JSON.stringify(fakeUser));
+
+      // Navigate to flashcards page
+      navigate('/flashcards');
+
+      // Reload the page to ensure the auth state is updated
+      window.location.reload();
+    } catch (err) {
+      console.error('Direct login error:', err);
     }
   };
 
@@ -79,6 +124,17 @@ const LoginPage: React.FC = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        {/* Direct login button for testing */}
+        <div style={{ marginTop: '1rem' }}>
+          <button
+            className="btn-secondary"
+            onClick={handleDirectLogin}
+            style={{ width: '100%' }}
+          >
+            Test Login (Bypass API)
+          </button>
+        </div>
 
         <div className="auth-links">
           <p>

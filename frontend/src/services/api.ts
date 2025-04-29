@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+// Use the correct API URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -26,34 +27,34 @@ api.interceptors.request.use(
 
 // Auth API
 export const authAPI = {
-  register: (userData: { username: string; email: string; password: string }) => 
+  register: (userData: { username: string; email: string; password: string }) =>
     api.post('/users/register', userData),
-  
-  login: (userData: { email: string; password: string }) => 
+
+  login: (userData: { email: string; password: string }) =>
     api.post('/users/login', userData),
-  
-  getProfile: () => 
+
+  getProfile: () =>
     api.get('/users/profile'),
 };
 
 // Flashcard API
 export const flashcardAPI = {
-  getFlashcards: () => 
+  getFlashcards: () =>
     api.get('/flashcards'),
-  
-  getDueFlashcards: () => 
+
+  getDueFlashcards: () =>
     api.get('/flashcards/due'),
-  
-  createFlashcard: (flashcardData: { front: string; back: string }) => 
+
+  createFlashcard: (flashcardData: { front: string; back: string }) =>
     api.post('/flashcards', flashcardData),
-  
-  updateFlashcard: (id: string, flashcardData: { front?: string; back?: string }) => 
+
+  updateFlashcard: (id: string, flashcardData: { front?: string; back?: string }) =>
     api.put(`/flashcards/${id}`, flashcardData),
-  
-  deleteFlashcard: (id: string) => 
+
+  deleteFlashcard: (id: string) =>
     api.delete(`/flashcards/${id}`),
-  
-  reviewFlashcard: (id: string, grade: number) => 
+
+  reviewFlashcard: (id: string, grade: number) =>
     api.post(`/flashcards/${id}/review`, { grade }),
 };
 
