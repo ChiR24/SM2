@@ -21,7 +21,11 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
 
   // Get the appropriate properties based on flashcard type
   const getId = () => isFlashcardUI(flashcard) ? flashcard.id : flashcard._id;
-  const getEaseFactor = () => isFlashcardUI(flashcard) ? flashcard.easeFactor : flashcard.efactor;
+  const getEaseFactor = () => {
+    const factor = isFlashcardUI(flashcard) ? flashcard.easeFactor : flashcard.efactor;
+    // Ensure we return a valid number
+    return typeof factor === 'number' && !isNaN(factor) ? factor : 2.5; // Default to 2.5 if invalid
+  };
   const getNextReview = () => {
     if (isFlashcardUI(flashcard)) {
       return flashcard.nextReview;
@@ -32,6 +36,15 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
 
   // Calculate learning strength as a percentage (0-100)
   const calculateStrength = (easeFactor: number, repetitions: number) => {
+    // Handle undefined or NaN values
+    if (!easeFactor || isNaN(easeFactor)) {
+      easeFactor = 2.5; // Default ease factor
+    }
+
+    if (!repetitions || isNaN(repetitions)) {
+      repetitions = 0; // Default repetitions
+    }
+
     // Base strength on ease factor (ranges from 1.3 to 2.5+) and repetitions
     const easeFactorNormalized = Math.min(Math.max((easeFactor - 1.3) / 1.2, 0), 1);
     const repetitionsNormalized = Math.min(repetitions / 8, 1);
@@ -40,7 +53,7 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
     return Math.round((easeFactorNormalized * 0.7 + repetitionsNormalized * 0.3) * 100);
   };
 
-  const strength = calculateStrength(getEaseFactor(), flashcard.repetitions);
+  const strength = calculateStrength(getEaseFactor(), flashcard.repetitions || 0);
 
   // Get color based on strength
   const getStrengthColor = (strength: number) => {
