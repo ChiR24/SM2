@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Flashcard } from '../types';
+import { Flashcard, FlashcardUI } from '../types';
 
 interface FlashcardItem3DProps {
-  flashcard: Flashcard;
+  flashcard: FlashcardUI | Flashcard;
   onDelete?: (id: string) => void;
 }
 
@@ -14,17 +14,33 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
     setIsFlipped(!isFlipped);
   };
 
+  // Helper function to determine if flashcard is FlashcardUI or Flashcard
+  const isFlashcardUI = (card: FlashcardUI | Flashcard): card is FlashcardUI => {
+    return 'id' in card && 'easeFactor' in card && 'nextReview' in card;
+  };
+
+  // Get the appropriate properties based on flashcard type
+  const getId = () => isFlashcardUI(flashcard) ? flashcard.id : flashcard._id;
+  const getEaseFactor = () => isFlashcardUI(flashcard) ? flashcard.easeFactor : flashcard.efactor;
+  const getNextReview = () => {
+    if (isFlashcardUI(flashcard)) {
+      return flashcard.nextReview;
+    } else {
+      return new Date(flashcard.nextReviewDate);
+    }
+  };
+
   // Calculate learning strength as a percentage (0-100)
   const calculateStrength = (easeFactor: number, repetitions: number) => {
     // Base strength on ease factor (ranges from 1.3 to 2.5+) and repetitions
     const easeFactorNormalized = Math.min(Math.max((easeFactor - 1.3) / 1.2, 0), 1);
     const repetitionsNormalized = Math.min(repetitions / 8, 1);
-    
+
     // Weighted combination
     return Math.round((easeFactorNormalized * 0.7 + repetitionsNormalized * 0.3) * 100);
   };
 
-  const strength = calculateStrength(flashcard.easeFactor, flashcard.repetitions);
+  const strength = calculateStrength(getEaseFactor(), flashcard.repetitions);
 
   // Get color based on strength
   const getStrengthColor = (strength: number) => {
@@ -38,37 +54,45 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
   const formatNextReview = (date: Date) => {
     const now = new Date();
     const nextReview = new Date(date);
-    
+
     // If date is today
     if (nextReview.toDateString() === now.toDateString()) {
       return 'Today';
     }
-    
+
     // If date is tomorrow
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     if (nextReview.toDateString() === tomorrow.toDateString()) {
       return 'Tomorrow';
     }
-    
+
     // If within 7 days
     const daysDiff = Math.round((nextReview.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (daysDiff < 7) {
       return `In ${daysDiff} days`;
     }
-    
+
     // Otherwise, return formatted date
     return nextReview.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  // Handle delete with the correct ID
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(getId());
+    }
+  };
+
   return (
-    <div 
+    <div
       className="flashcard-item-3d"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`flashcard-wrapper ${isFlipped ? 'is-flipped' : ''}`}>
-        <div 
+        <div
           className="flashcard-inner"
           onClick={handleFlip}
           style={{
@@ -78,9 +102,9 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
           {/* Front of card */}
           <div className="flashcard-front">
             <div className="card-header">
-              <div 
-                className="card-status" 
-                style={{ 
+              <div
+                className="card-status"
+                style={{
                   backgroundColor: `${getStrengthColor(strength)}20`,
                   color: getStrengthColor(strength)
                 }}
@@ -88,12 +112,9 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
                 {strength}% Strength
               </div>
               {onDelete && (
-                <button 
-                  className="delete-btn" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(flashcard.id);
-                  }}
+                <button
+                  className="delete-btn"
+                  onClick={handleDelete}
                   aria-label="Delete flashcard"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -122,9 +143,9 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
           {/* Back of card */}
           <div className="flashcard-back">
             <div className="card-header">
-              <div 
-                className="card-status" 
-                style={{ 
+              <div
+                className="card-status"
+                style={{
                   backgroundColor: `${getStrengthColor(strength)}20`,
                   color: getStrengthColor(strength)
                 }}
@@ -132,12 +153,9 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
                 {strength}% Strength
               </div>
               {onDelete && (
-                <button 
-                  className="delete-btn" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(flashcard.id);
-                  }}
+                <button
+                  className="delete-btn"
+                  onClick={handleDelete}
                   aria-label="Delete flashcard"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -164,12 +182,12 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
           </div>
         </div>
       </div>
-      
+
       <div className="card-footer">
         <div className="card-meta">
           <div className="meta-item">
             <span className="meta-label">Next Review</span>
-            <span className="meta-value">{formatNextReview(flashcard.nextReview)}</span>
+            <span className="meta-value">{formatNextReview(getNextReview())}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">Repetitions</span>
@@ -177,7 +195,7 @@ const FlashcardItem3D: React.FC<FlashcardItem3DProps> = ({ flashcard, onDelete }
           </div>
           <div className="meta-item">
             <span className="meta-label">Ease</span>
-            <span className="meta-value">{flashcard.easeFactor.toFixed(2)}</span>
+            <span className="meta-value">{getEaseFactor().toFixed(2)}</span>
           </div>
         </div>
       </div>

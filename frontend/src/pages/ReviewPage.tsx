@@ -216,17 +216,9 @@ const ReviewPage: React.FC = () => {
           transition={{ duration: 0.4, ease: "easeOut" }}
           className="flashcard-review-wrapper"
         >
-          {/* Convert the flashcard to the format expected by FlashcardReview3D */}
+          {/* We can pass the original flashcard directly since we've updated the component */}
           <FlashcardReview3D
-            flashcard={{
-              id: dueFlashcards[currentIndex]._id,
-              front: dueFlashcards[currentIndex].front,
-              back: dueFlashcards[currentIndex].back,
-              nextReview: new Date(dueFlashcards[currentIndex].nextReviewDate),
-              repetitions: dueFlashcards[currentIndex].repetitions,
-              easeFactor: dueFlashcards[currentIndex].efactor,
-              interval: dueFlashcards[currentIndex].interval
-            }}
+            flashcard={dueFlashcards[currentIndex]}
             onGrade={(grade) => handleGrade(dueFlashcards[currentIndex]._id, grade)}
           />
         </motion.div>

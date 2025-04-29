@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Flashcard } from '../types';
+import { Flashcard, FlashcardUI, RecallGrade } from '../types';
 import './FlashcardReview3D.css';
 
 interface FlashcardReview3DProps {
-  flashcard: Flashcard;
-  onGrade: (grade: number) => void;
+  flashcard: FlashcardUI | Flashcard;
+  onGrade: (grade: RecallGrade) => void;
 }
 
 const FlashcardReview3D: React.FC<FlashcardReview3DProps> = ({ flashcard, onGrade }) => {
@@ -19,12 +19,12 @@ const FlashcardReview3D: React.FC<FlashcardReview3DProps> = ({ flashcard, onGrad
     setIsGrading(false);
     setSelectedGrade(null);
     setAnimation('animate-slide-in');
-    
+
     // Remove animation class after animation completes
     const timer = setTimeout(() => {
       setAnimation('');
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [flashcard]);
 
@@ -38,14 +38,15 @@ const FlashcardReview3D: React.FC<FlashcardReview3DProps> = ({ flashcard, onGrad
 
   const handleGrade = (grade: number) => {
     setSelectedGrade(grade);
-    
+
     // Add a small delay before submitting the grade
     setTimeout(() => {
       setAnimation('animate-slide-out');
-      
+
       // Wait for animation to complete before calling onGrade
       setTimeout(() => {
-        onGrade(grade);
+        // Convert to RecallGrade type
+        onGrade(grade as RecallGrade);
       }, 300);
     }, 300);
   };
@@ -96,7 +97,7 @@ const FlashcardReview3D: React.FC<FlashcardReview3DProps> = ({ flashcard, onGrad
             <h3 className="grade-title">How well did you know this?</h3>
             <p className="grade-subtitle">Rate your recall quality from 0-5</p>
           </div>
-          
+
           <div className="grade-options">
             {[0, 1, 2, 3, 4, 5].map((grade) => (
               <button

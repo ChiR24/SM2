@@ -249,15 +249,8 @@ const FlashcardsPage: React.FC = () => {
         >
           {flashcards.map((flashcard, index) => {
             // Convert the flashcard to the format expected by FlashcardItem3D
-            const flashcard3D = {
-              id: flashcard._id,
-              front: flashcard.front,
-              back: flashcard.back,
-              nextReview: new Date(flashcard.nextReviewDate),
-              repetitions: flashcard.repetitions,
-              easeFactor: flashcard.efactor,
-              interval: flashcard.interval
-            };
+            // We can pass the original flashcard directly since we've updated the component
+            // to handle both types
 
             return (
               <motion.div
@@ -268,7 +261,7 @@ const FlashcardsPage: React.FC = () => {
                 transition={{ delay: 0.1 * index, duration: 0.5 }}
               >
                 <FlashcardItem3D
-                  flashcard={flashcard3D}
+                  flashcard={flashcard}
                   onDelete={handleDeleteFlashcard}
                 />
               </motion.div>
