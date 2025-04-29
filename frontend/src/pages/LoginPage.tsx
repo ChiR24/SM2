@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +26,8 @@ const LoginPage: React.FC = () => {
 
       const response = await authAPI.login({ email, password });
 
-      // Save token to localStorage
-      localStorage.setItem('token', response.data.token);
+      // Use the login function from AuthContext to update auth state
+      await login(response.data.token);
 
       // Redirect to flashcards page
       navigate('/flashcards');
