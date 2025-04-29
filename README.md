@@ -56,6 +56,43 @@ The application implements the SuperMemo 2 (SM2) algorithm for spaced repetition
    - For repetition = 1: interval = 6
    - For repetition > 1: interval = interval * EF
 
+### Implementation Details
+
+The SM2 algorithm is implemented in the backend in the `controllers/flashcardController.js` file. The key function is `updateFlashcardWithSM2`, which takes a flashcard and a grade (0-5) and updates the flashcard's properties according to the SM2 algorithm:
+
+```javascript
+const updateFlashcardWithSM2 = (flashcard, grade) => {
+  // If grade is less than 3, reset repetitions to 0
+  if (grade < 3) {
+    flashcard.repetitions = 0;
+    flashcard.interval = 1;
+  } else {
+    // Calculate new interval based on repetitions
+    if (flashcard.repetitions === 0) {
+      flashcard.interval = 1;
+    } else if (flashcard.repetitions === 1) {
+      flashcard.interval = 6;
+    } else {
+      flashcard.interval = Math.round(flashcard.interval * flashcard.easeFactor);
+    }
+
+    // Increment repetitions
+    flashcard.repetitions += 1;
+  }
+
+  // Update ease factor
+  const newEaseFactor = flashcard.easeFactor + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
+  flashcard.easeFactor = Math.max(1.3, newEaseFactor);
+
+  // Calculate next review date
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + flashcard.interval);
+  flashcard.nextReview = nextReview;
+
+  return flashcard;
+};
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -145,25 +182,15 @@ npm start
    - See how many cards are due for review today
    - Monitor your overall retention rate
 
-## Recent Updates
+## UI/UX Features
 
-### Version 1.1.0 (April 2025)
-- Fixed authentication state management to properly handle logout
-- Added proper autocomplete attributes to form inputs for better accessibility
-- Improved error handling and user feedback
-- Enhanced UI with smoother animations and transitions
-- Removed mock data dependencies for a more robust application
+The application features a modern, clean UI with several enhancements:
 
-## Contributing
+1. **3D Flashcard Animations**: Smooth 3D flip animations for flashcards with proper text orientation
+2. **Modern Dashboard**: Clean, card-based layout with key metrics (due cards, total cards, streak)
+3. **Intuitive Review Interface**: Clear, visually distinct rating buttons with color coding
+4. **Responsive Design**: Works seamlessly on all devices from mobile to desktop
+5. **Consistent Theme**: Clean white theme for a professional, distraction-free learning experience
+6. **Visual Strength Indicators**: Color-coded indicators showing learning strength for each flashcard
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+The UI is designed to be intuitive and distraction-free, allowing users to focus on the learning process.
