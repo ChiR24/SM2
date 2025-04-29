@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, User } from '../context/AuthContext';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
       const fakeToken = 'test_token_' + Date.now();
 
       // Set user data directly
-      const fakeUser = {
+      const fakeUser: User = {
         id: '123',
         username: 'testuser',
         email: 'test@example.com'
