@@ -14,7 +14,11 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'x-auth-token']
+}));
 app.use(express.json());
 
 // Routes
@@ -23,7 +27,7 @@ app.use('/api/users', userRoutes);
 
 // Default route
 app.get('/', (req, res) => {
-  res.send('SM2 Spaced Repetition API is running');
+  res.send('SM2 Flashcard Backend is running!');
 });
 
 // Connect to MongoDB
