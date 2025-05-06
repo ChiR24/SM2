@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM2 Flashcard App Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4A6FA5;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .card-question {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .card-answer {
+            color: #666;
+        }
+        .card-category {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        .button {
+            background-color: #4A6FA5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #3a5a80;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SM2 Flashcard App</h1>
+        
+        <div class="section">
+            <h2>Project Overview</h2>
+            <p>This is a mobile flashcard application built with React Native that implements the SuperMemo 2 (SM2) spaced repetition algorithm to help users learn and retain information more effectively.</p>
+        </div>
+        
+        <div class="section">
+            <h2>Features</h2>
+            <ul>
+                <li>User authentication (register, login, logout)</li>
+                <li>Create, edit, and delete flashcards</li>
+                <li>Organize flashcards by categories</li>
+                <li>Review flashcards using the SM2 spaced repetition algorithm</li>
+                <li>Track learning progress with statistics</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>Sample Flashcards</h2>
+            
+            <div class="card">
+                <div class="card-question">What is the capital of France?</div>
+                <div class="card-answer">Paris</div>
+                <div class="card-category">Geography</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-question">What is 2 + 2?</div>
+                <div class="card-answer">4</div>
+                <div class="card-category">Mathematics</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-question">Who wrote "Romeo and Juliet"?</div>
+                <div class="card-answer">William Shakespeare</div>
+                <div class="card-category">Literature</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>SM2 Algorithm</h2>
+            <p>The SuperMemo 2 (SM2) algorithm is a spaced repetition algorithm that schedules flashcard reviews based on how well the user remembers them. The algorithm adjusts the intervals between reviews based on the user's performance, showing difficult cards more frequently and easy cards less often.</p>
+            <p>The implementation includes:</p>
+            <ul>
+                <li>Quality ratings (0-5) for user responses</li>
+                <li>Ease factor calculation</li>
+                <li>Interval calculation</li>
+                <li>Next review date scheduling</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>Technology Stack</h2>
+            <ul>
+                <li><strong>Frontend:</strong> React Native (without Expo)</li>
+                <li><strong>State Management:</strong> React Context API</li>
+                <li><strong>Navigation:</strong> React Navigation</li>
+                <li><strong>Storage:</strong> AsyncStorage for local data persistence</li>
+                <li><strong>Backend:</strong> Node.js and MongoDB (to be implemented)</li>
+            </ul>
+        </div>
+        
+        <div class="section" style="text-align: center;">
+            <button class="button">Open App</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "SM2FlashcardApp",
+  "displayName": "SM2 Flashcards",
+  "icon": "./assets/icons/app_icon.svg",
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_foreground.xml",
+      "backgroundImage": "./android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_background.xml"
+    }
+  }
+}
